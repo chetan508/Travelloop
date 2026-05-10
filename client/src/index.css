@@ -1,0 +1,1338 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { height: 100%; overflow: hidden; background-color: var(--bg-primary); }
+body { height: 100%; overflow: auto; overscroll-behavior: none; -webkit-overflow-scrolling: touch; }
+
+
+/* Journey desktop feed: hide scrollbar (right column is a sticky map, a
+   visible scrollbar on the left breaks the polarsteps-style reading feel). */
+.journey-feed-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+.journey-feed-scroll::-webkit-scrollbar { display: none; }
+
+/* Leaflet Popups — Enter-Animation vom Anchor-Tip */
+.leaflet-popup {
+  animation: traveloop-popover-enter 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  transform-origin: bottom center;
+  will-change: transform, opacity;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 14px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18) !important;
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-faint);
+}
+.leaflet-popup-tip {
+  background: var(--bg-card) !important;
+}
+.leaflet-popup-close-button {
+  transition: color 150ms cubic-bezier(0.23, 1, 0.32, 1), transform 150ms cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+.leaflet-popup-close-button:hover {
+  transform: scale(1.15);
+  color: var(--text-primary) !important;
+}
+
+.atlas-tooltip {
+  background: rgba(10, 10, 20, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  color: #f1f5f9 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 14px !important;
+  padding: 10px 14px !important;
+  font-size: 12px !important;
+  font-family: inherit !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25) !important;
+  transition: none !important;
+}
+.atlas-tooltip::before { border-top-color: rgba(10, 10, 20, 0.6) !important; }
+html:not(.dark) .atlas-tooltip {
+  background: rgba(255, 255, 255, 0.75) !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1) !important;
+}
+html:not(.dark) .atlas-tooltip::before { border-top-color: rgba(255, 255, 255, 0.75) !important; }
+.leaflet-tooltip.atlas-tooltip { opacity: 1 !important; }
+.leaflet-tooltip-pane { transition: none !important; }
+.leaflet-fade-anim .leaflet-tooltip { transition: none !important; opacity: 1 !important; }
+
+.dark .leaflet-control-zoom a {
+  background: rgba(10, 10, 20, 0.7) !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(12px);
+}
+.dark .leaflet-control-zoom a:hover {
+  background: rgba(30, 30, 40, 0.8) !important;
+}
+@media (max-width: 767px) {
+  .leaflet-control-zoom { display: none !important; }
+}
+
+/* Dark mode overrides for pages using hardcoded slate-* Tailwind classes */
+html.dark .bg-slate-50 { background-color: var(--bg-secondary) !important; }
+html.dark .bg-white { background-color: var(--bg-card) !important; }
+html.dark .bg-slate-100 { background-color: var(--bg-secondary) !important; }
+html.dark .bg-slate-900.text-white { background-color: #e2e8f0 !important; color: #0f172a !important; }
+html.dark .border-slate-200, html.dark .border-slate-300 { border-color: var(--border-primary) !important; }
+html.dark .border-slate-100, html.dark .border-b-slate-100 { border-color: var(--border-secondary) !important; }
+html.dark .text-slate-900 { color: var(--text-primary) !important; }
+html.dark .text-slate-700 { color: var(--text-secondary) !important; }
+html.dark .text-slate-600 { color: var(--text-muted) !important; }
+html.dark .text-slate-500 { color: var(--text-muted) !important; }
+html.dark .text-slate-400 { color: var(--text-faint) !important; }
+html.dark .hover\:bg-slate-50:hover, html.dark .hover\:bg-slate-100:hover { background-color: var(--bg-hover) !important; }
+html.dark .hover\:text-slate-900:hover { color: var(--text-primary) !important; }
+html.dark .hover\:bg-slate-700:hover { background-color: var(--bg-hover) !important; }
+html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]) { border-color: var(--border-secondary) !important; }
+html.dark .focus\:ring-slate-400:focus { --tw-ring-color: var(--text-faint) !important; }
+html.dark input[class*="border-slate"], html.dark input[class*="text-slate"] { background: var(--bg-secondary) !important; color: var(--text-primary) !important; border-color: var(--border-primary) !important; }
+html.dark .text-amber-900 { color: #fbbf24 !important; }
+html.dark .text-amber-700 { color: #f59e0b !important; }
+html.dark .bg-amber-50 { background-color: rgba(245,158,11,0.1) !important; }
+html.dark .border-amber-200 { border-color: rgba(245,158,11,0.2) !important; }
+html.dark .disabled\:bg-slate-400:disabled { background-color: var(--text-faint) !important; }
+html.dark button.bg-slate-900 { background-color: #e2e8f0 !important; color: #0f172a !important; opacity: 1 !important; }
+html.dark button.bg-slate-900:hover { background-color: #cbd5e1 !important; }
+html.dark button.bg-slate-900:disabled { background-color: #ffffff !important; color: #000000 !important; opacity: 0.4 !important; }
+html.dark span.bg-slate-900 { background-color: #e2e8f0 !important; color: #0f172a !important; }
+html.dark span.bg-slate-100 { background-color: var(--bg-secondary) !important; color: var(--text-muted) !important; }
+html.dark .border-b { border-bottom-color: var(--border-secondary) !important; }
+/* Gray variants (CategoryManager, BackupPanel) */
+html.dark .bg-gray-50 { background-color: var(--bg-secondary) !important; }
+html.dark .bg-gray-100 { background-color: var(--bg-secondary) !important; }
+html.dark .border-gray-200, html.dark .border-gray-300 { border-color: var(--border-primary) !important; }
+html.dark .border-gray-100 { border-color: var(--border-secondary) !important; }
+html.dark .text-gray-900 { color: var(--text-primary) !important; }
+html.dark .text-gray-700 { color: var(--text-secondary) !important; }
+html.dark .text-gray-600 { color: var(--text-muted) !important; }
+html.dark .text-gray-500 { color: var(--text-muted) !important; }
+html.dark .text-gray-400 { color: var(--text-faint) !important; }
+html.dark .text-gray-300 { color: var(--text-faint) !important; }
+html.dark .hover\:bg-gray-50:hover, html.dark .hover\:bg-gray-200:hover { background-color: var(--bg-hover) !important; }
+html.dark .hover\:border-gray-200:hover, html.dark .hover\:border-gray-400:hover { border-color: var(--border-primary) !important; }
+html.dark input.bg-white, html.dark input[class*="bg-white"] { background: var(--bg-secondary) !important; color: var(--text-primary) !important; }
+html.dark .bg-gray-200 { background-color: var(--border-primary) !important; }
+html.dark .border-gray-300.border-t-slate-600 { border-color: var(--border-primary) !important; border-top-color: var(--text-primary) !important; }
+/* Modal buttons */
+html.dark button[class*="text-slate-600"][class*="border-slate-200"] { color: var(--text-muted) !important; border-color: var(--border-primary) !important; }
+html.dark button[class*="text-slate-600"][class*="border-slate-200"]:hover { background: var(--bg-hover) !important; }
+/* Dashed borders */
+html.dark .border-dashed.border-gray-300 { border-color: var(--border-primary) !important; }
+html.dark .bg-slate-50\/60, html.dark [class*="bg-slate-50/"] { background-color: transparent !important; }
+
+/* Reorder buttons: desktop = original style; mobile = always visible, larger touch targets */
+.reorder-buttons {
+  flex-direction: column;
+  opacity: 0;
+}
+.reorder-buttons button {
+  background: none !important;
+  padding: 1px 2px;
+}
+@media (max-width: 767px) {
+  .reorder-buttons {
+    flex-direction: row !important;
+    opacity: 1 !important;
+    align-items: center;
+    margin-left: auto;
+  }
+  .reorder-buttons button {
+    background: var(--bg-tertiary) !important;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .note-edit-buttons {
+    opacity: 1 !important;
+  }
+}
+
+/* Ort-Zeile Hover: Sortier-Buttons anzeigen */
+.place-row:hover .reorder-btns {
+  opacity: 1 !important;
+}
+
+/* Ladeanimation */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Press-Feedback + bessere Easings (Emil Kowalski) ─────────── */
+/* Buttons sollen antworten wenn sie gedrückt werden. */
+button:not(:disabled):not([data-no-press]),
+[role="button"]:not([aria-disabled="true"]):not([data-no-press]) {
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter !important;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+button:not(:disabled):not([data-no-press]):active,
+[role="button"]:not([aria-disabled="true"]):not([data-no-press]):active {
+  transform: scale(0.97);
+  transition-duration: 80ms;
+}
+
+/* Tailwind-Default-Easing durch ease-out-quint ersetzen.
+   Eingebaute CSS-Easings sind kraftlos; ease-out-quint hat Punch. */
+.transition,
+.transition-all,
+.transition-colors,
+.transition-opacity,
+.transition-transform,
+.transition-shadow {
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Input-Focus transitions — border + ring faden weich ein */
+input, textarea, select {
+  transition: border-color 150ms cubic-bezier(0.23, 1, 0.32, 1),
+              box-shadow 150ms cubic-bezier(0.23, 1, 0.32, 1),
+              background-color 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Back-Button Icon-Slide on hover */
+.traveloop-back-btn .traveloop-back-icon {
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.traveloop-back-btn:hover .traveloop-back-icon {
+  transform: translateX(-2px);
+}
+
+/* Global focus-visible ring — konsistent überall */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+button:focus-visible, [role="button"]:focus-visible, a:focus-visible {
+  outline-offset: 3px;
+}
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: none;
+}
+
+/* Theme crossfade — beim Dark/Light switch, Hauptflächen + Text faden ihre Farben.
+   Sparingly: nur background-color und color bekommen eine Transition. */
+html.traveloop-theme-transitioning,
+html.traveloop-theme-transitioning body,
+html.traveloop-theme-transitioning *:not(img):not(video):not(canvas):not([class*="traveloop-skeleton"]):not(.leaflet-layer) {
+  transition:
+    background-color 320ms cubic-bezier(0.23, 1, 0.32, 1),
+    color 320ms cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 320ms cubic-bezier(0.23, 1, 0.32, 1),
+    fill 320ms cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+
+/* Touch-Geräte: iOS-Tap-Highlight weg (wir haben eigenes Press-Feedback) */
+@media (hover: none) {
+  button, [role="button"], a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+html, body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Tabular-nums global für Time/Date/Currency/Counter */
+time, .tabular-nums, [data-tabular],
+input[type="number"], input[type="time"], input[type="date"], input[type="datetime-local"] {
+  font-variant-numeric: tabular-nums;
+}
+/* Wenn Element explizit ease-in-out nutzt (z.B. Accordions), nicht überschreiben.
+   Tailwind setzt ease-in-out via eigener Klasse — die gewinnt durch letzte Deklaration. */
+
+/* Press-Scale für clickbare Divs (Cards, Tiles) — sanfter als Buttons */
+[data-press]:active {
+  transform: scale(0.985);
+  transition-duration: 80ms;
+}
+
+/* ── Popover/Dropdown Enter-Animationen ─────────────────────────
+   Emil: Popovers sollen von ihrem Trigger aus scalen, nicht vom Center.
+   Start bei scale(0.95) — nichts in der echten Welt poppt aus dem Nichts. */
+@keyframes traveloop-menu-enter {
+  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes traveloop-popover-enter {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes traveloop-modal-enter {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes traveloop-backdrop-enter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes traveloop-toast-enter {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes traveloop-progress-fill {
+  from { width: 0%; }
+  to   { width: var(--traveloop-progress-to, 0%); }
+}
+
+/* Pie-Chart Reveal — rotate + fade-in, gibt dem Kreisdiagramm ein "Draw"-Gefühl */
+@keyframes traveloop-pie-reveal {
+  from { opacity: 0; transform: rotate(-90deg) scale(0.85); }
+  to   { opacity: 1; transform: rotate(0deg) scale(1); }
+}
+.traveloop-pie-reveal {
+  animation: traveloop-pie-reveal 900ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
+/* Bar-Chart Reveal — horizontaler Fill von links */
+@keyframes traveloop-bar-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.traveloop-bar-fill {
+  animation: traveloop-bar-fill 700ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* Page-Transition — subtiler Fade-Up beim Mount */
+@keyframes traveloop-page-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.traveloop-page-enter {
+  animation: traveloop-page-enter 220ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+/* Skeleton shimmer — ein fließender Gradient-Strip überquert den Platzhalter */
+@keyframes traveloop-shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+.traveloop-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 0%,
+    var(--bg-hover) 50%,
+    var(--bg-tertiary) 100%
+  );
+  background-size: 200% 100%;
+  animation: traveloop-shimmer 1.6s linear infinite;
+  border-radius: 8px;
+  color: transparent;
+  user-select: none;
+}
+.dark .traveloop-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 100%
+  );
+  background-size: 200% 100%;
+}
+.traveloop-menu-enter {
+  animation: traveloop-menu-enter 200ms cubic-bezier(0.23, 1, 0.32, 1);
+  transform-origin: top right;
+  will-change: transform, opacity;
+}
+.traveloop-menu-enter-left {
+  animation: traveloop-menu-enter 200ms cubic-bezier(0.23, 1, 0.32, 1);
+  transform-origin: top left;
+  will-change: transform, opacity;
+}
+.traveloop-popover-enter {
+  animation: traveloop-popover-enter 180ms cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform, opacity;
+}
+.traveloop-modal-enter {
+  animation: traveloop-modal-enter 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform, opacity;
+}
+
+/* Mobile-Drawer-Feel — Modal slidet von unten rein, wird unten am Screen angedockt */
+@keyframes traveloop-drawer-enter {
+  from { opacity: 0; transform: translateY(100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 639px) {
+  .traveloop-modal-enter:not(.traveloop-modal-centered) {
+    animation: traveloop-drawer-enter 320ms cubic-bezier(0.32, 0.72, 0, 1);
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    margin-top: auto !important;
+    align-self: flex-end;
+  }
+}
+.traveloop-backdrop-enter {
+  animation: traveloop-backdrop-enter 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.traveloop-toast-enter {
+  animation: traveloop-toast-enter 260ms cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform, opacity;
+}
+
+/* Stagger-Helpers für Listen — Enter-Animation mit Offset */
+@keyframes traveloop-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.traveloop-stagger > * {
+  animation: traveloop-fade-up 280ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+.traveloop-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.traveloop-stagger > *:nth-child(2) { animation-delay: 40ms; }
+.traveloop-stagger > *:nth-child(3) { animation-delay: 80ms; }
+.traveloop-stagger > *:nth-child(4) { animation-delay: 120ms; }
+.traveloop-stagger > *:nth-child(5) { animation-delay: 160ms; }
+.traveloop-stagger > *:nth-child(6) { animation-delay: 200ms; }
+.traveloop-stagger > *:nth-child(7) { animation-delay: 240ms; }
+.traveloop-stagger > *:nth-child(8) { animation-delay: 280ms; }
+.traveloop-stagger > *:nth-child(n+9) { animation-delay: 320ms; }
+
+/* Reduced motion — Emil's Accessibility-Regel: fewer and gentler, not zero */
+@media (prefers-reduced-motion: reduce) {
+  .traveloop-menu-enter, .traveloop-menu-enter-left, .traveloop-popover-enter,
+  .traveloop-modal-enter, .traveloop-toast-enter, .traveloop-stagger > * {
+    animation: traveloop-backdrop-enter 120ms ease-out;
+  }
+  .traveloop-skeleton {
+    animation: none;
+    background: var(--bg-tertiary);
+  }
+  button:not(:disabled):not([data-no-press]):active,
+  [role="button"]:not([aria-disabled="true"]):not([data-no-press]):active,
+  [data-press]:active {
+    transform: none;
+  }
+  /* Parallax & lift disablen */
+  .group:hover img,
+  .group:hover .cover-img { transform: none !important; }
+  *:hover { translate: none !important; }
+}
+
+/* ── Design tokens ─────────────────────────────── */
+:root {
+  /* Easing curves — stärker als die CSS-Defaults, siehe easing.dev */
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-quint: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --nav-h: 0px;
+  --bottom-nav-h: 0px;
+  --font-system: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-6: 24px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --shadow-card: 0 14px 40px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-elevated: 0 24px 80px rgba(15, 23, 42, 0.16);
+  --shadow-soft: 0 10px 30px rgba(14, 116, 144, 0.12);
+
+  /* Theme colors */
+  --bg-primary: #fbf7f0;
+  --bg-secondary: #f5efe4;
+  --bg-tertiary: #ebe3d5;
+  --bg-elevated: rgba(255,255,255,0.78);
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
+  --bg-hover: rgba(0,0,0,0.03);
+  --bg-selected: #e2e8f0;
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --text-faint: #9ca3af;
+  --border-primary: #e5e7eb;
+  --border-secondary: #f3f4f6;
+  --border-faint: rgba(0,0,0,0.06);
+  --accent: #2563eb;
+  --accent-text: #ffffff;
+  --accent-2: #60a5fa;
+  --accent-3: #dc2626;
+  --accent-soft: rgba(37, 99, 235, 0.13);
+  --brand-gradient: linear-gradient(135deg, #111827 0%, #2563eb 62%, #991b1b 135%);
+  --action-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 64%, #b91c1c 145%);
+  --action-gradient-hover: linear-gradient(135deg, #172554 0%, #1d4ed8 66%, #991b1b 145%);
+  --action-shadow: 0 12px 26px rgba(37, 99, 235, 0.20), 0 6px 16px rgba(185, 28, 28, 0.10);
+  --action-shadow-hover: 0 16px 34px rgba(37, 99, 235, 0.26), 0 8px 20px rgba(185, 28, 28, 0.14);
+  --travel-sky: #dff7ff;
+  --travel-sand: #f5efe4;
+  --travel-ink: #10202f;
+  --sidebar-bg: rgba(255,255,255,0.78);
+  --sidebar-shadow: 0 4px 32px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06);
+  --tooltip-bg: rgba(255,255,255,0.96);
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #d1d5db;
+  --scrollbar-hover: #9ca3af;
+
+  /* Journey design tokens */
+  --journal-bg: #FAFAFA;
+  --journal-card: #FFFFFF;
+  --journal-border: #E4E4E7;
+  --journal-accent: #6366F1;
+  --journal-text: #09090B;
+  --journal-muted: #71717A;
+  --journal-faint: #A1A1AA;
+  --mood-amazing: #E8654A;
+  --mood-good: #EF9F27;
+  --mood-neutral: #94928C;
+  --mood-tired: #6B9BD2;
+  --mood-rough: #9B8EC4;
+}
+
+@media (max-width: 767px) {
+  :root { --bottom-nav-h: calc(84px + env(safe-area-inset-bottom, 0px)); }
+}
+
+@media (min-width: 768px) {
+  :root { --nav-h: calc(56px + env(safe-area-inset-top, 0px)); }
+}
+
+.dark {
+  --bg-primary: #08111b;
+  --bg-secondary: #0d1724;
+  --bg-tertiary: #132235;
+  --bg-elevated: rgba(12,23,36,0.78);
+  --bg-card: #0f1a28;
+  --bg-input: #122033;
+  --bg-hover: rgba(255,255,255,0.06);
+  --bg-selected: rgba(255,255,255,0.1);
+  --text-primary: #f4f4f5;
+  --text-secondary: #d4d4d8;
+  --text-muted: #a1a1aa;
+  --text-faint: #71717a;
+  --border-primary: #27272a;
+  --border-secondary: #1c1c21;
+  --border-faint: rgba(255,255,255,0.07);
+  --accent: #60a5fa;
+  --accent-text: #061225;
+  --accent-2: #93c5fd;
+  --accent-3: #f87171;
+  --accent-soft: rgba(96, 165, 250, 0.14);
+  --brand-gradient: linear-gradient(135deg, #111827 0%, #2563eb 62%, #991b1b 135%);
+  --action-gradient: linear-gradient(135deg, #1e40af 0%, #2563eb 68%, #b91c1c 150%);
+  --action-gradient-hover: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 68%, #991b1b 150%);
+  --action-shadow: 0 14px 34px rgba(37, 99, 235, 0.22), 0 8px 20px rgba(185, 28, 28, 0.10);
+  --action-shadow-hover: 0 18px 42px rgba(37, 99, 235, 0.28), 0 10px 24px rgba(185, 28, 28, 0.14);
+  --travel-sky: #132235;
+  --travel-sand: #0d1724;
+  --travel-ink: #f4f7fb;
+  --sidebar-bg: rgba(12,23,36,0.78);
+  --sidebar-shadow: 0 4px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+  --tooltip-bg: rgba(19,19,22,0.96);
+  --scrollbar-track: #131316;
+  --scrollbar-thumb: #3f3f46;
+  --scrollbar-hover: #52525b;
+
+  /* Journey design tokens (dark) */
+  --journal-bg: #09090B;
+  --journal-card: #18181B;
+  --journal-border: #27272A;
+  --journal-accent: #818CF8;
+  --journal-text: #FAFAFA;
+  --journal-muted: #A1A1AA;
+  --journal-faint: #52525B;
+  --mood-amazing: #f28a6e;
+  --mood-good: #f5b84d;
+  --mood-neutral: #9a9a94;
+  --mood-tired: #6db3f0;
+  --mood-rough: #a9a3f0;
+}
+
+body {
+  font-family: var(--font-system);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    linear-gradient(115deg, rgba(37,99,235,0.12), transparent 32%),
+    linear-gradient(245deg, rgba(37,99,235,0.10), transparent 38%),
+    radial-gradient(ellipse at 50% -20%, rgba(255,255,255,0.72), transparent 58%);
+}
+
+.traveloop-route-shell {
+  min-height: 100%;
+  animation: traveloop-page-enter 260ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.traveloop-app-shell {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.54), rgba(255,255,255,0) 280px),
+    linear-gradient(135deg, rgba(37,99,235,0.10), transparent 38%),
+    var(--bg-secondary);
+}
+
+.traveloop-animated-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 68% 24%, rgba(37, 99, 235, 0.16), transparent 28%),
+    radial-gradient(circle at 18% 72%, rgba(153, 27, 27, 0.10), transparent 30%),
+    linear-gradient(180deg, rgba(8, 17, 27, 0.16), rgba(8, 17, 27, 0.72));
+}
+
+.traveloop-animated-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 18% 8%, rgba(37, 99, 235, 0.18), transparent 36%),
+    radial-gradient(ellipse at 82% 16%, rgba(37, 99, 235, 0.16), transparent 38%),
+    radial-gradient(ellipse at 56% 96%, rgba(185, 28, 28, 0.10), transparent 42%);
+  opacity: 0.72;
+}
+
+.traveloop-animated-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 76px 76px;
+  mask-image: linear-gradient(180deg, transparent 0%, black 16%, black 76%, transparent 100%);
+  opacity: 0.38;
+}
+
+.traveloop-aurora {
+  position: absolute;
+  left: -18%;
+  width: 138%;
+  height: 28%;
+  border-radius: 999px;
+  filter: blur(30px);
+  transform: rotate(-8deg);
+  opacity: 0.24;
+  will-change: transform;
+}
+
+.traveloop-aurora-one {
+  top: 7%;
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.30), rgba(96, 165, 250, 0.18), transparent);
+  animation: traveloop-aurora-flow 30s ease-in-out infinite alternate;
+}
+
+.traveloop-aurora-two {
+  top: 34%;
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.16), rgba(185, 28, 28, 0.12), transparent);
+  animation: traveloop-aurora-flow 38s ease-in-out -7s infinite alternate-reverse;
+}
+
+.traveloop-map-grid {
+  position: absolute;
+  inset: 8% 5% 0;
+  opacity: 0.25;
+  background:
+    radial-gradient(circle at 18% 30%, rgba(255,255,255,0.24) 0 1px, transparent 2px),
+    radial-gradient(circle at 33% 42%, rgba(255,255,255,0.20) 0 1px, transparent 2px),
+    radial-gradient(circle at 51% 25%, rgba(255,255,255,0.22) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 45%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
+    radial-gradient(circle at 88% 32%, rgba(255,255,255,0.20) 0 1px, transparent 2px);
+  background-size: 420px 260px;
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 72%);
+  opacity: 0.18;
+}
+
+.traveloop-route-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.32;
+}
+
+.traveloop-route-line {
+  fill: none;
+  stroke: rgba(96, 165, 250, 0.30);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-dasharray: 10 18;
+  animation: traveloop-route-dash 34s linear infinite;
+}
+
+.traveloop-route-line.line-two {
+  stroke: rgba(185, 28, 28, 0.18);
+  animation-duration: 42s;
+  animation-direction: reverse;
+}
+
+.traveloop-destination-pins circle {
+  fill: rgba(96, 165, 250, 0.58);
+  animation: traveloop-pin-pulse 6s ease-in-out infinite;
+}
+
+.traveloop-destination-pins circle:nth-child(2) { animation-delay: 0.8s; }
+.traveloop-destination-pins circle:nth-child(3) { animation-delay: 1.6s; }
+
+.traveloop-compass-orbit {
+  position: absolute;
+  right: clamp(18px, 5vw, 84px);
+  top: clamp(92px, 16vh, 190px);
+  width: clamp(92px, 12vw, 146px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(125, 211, 252, 0.10);
+  opacity: 0.36;
+  box-shadow: inset 0 0 20px rgba(37, 99, 235, 0.08), 0 0 24px rgba(37, 99, 235, 0.06);
+}
+
+.traveloop-compass-orbit::before,
+.traveloop-compass-orbit::after {
+  content: "";
+  position: absolute;
+  inset: 18%;
+  border-radius: inherit;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+.traveloop-compass-orbit::after {
+  inset: 40%;
+  background: radial-gradient(circle, rgba(96, 165, 250, 0.26), transparent 60%);
+  border-style: solid;
+}
+
+.traveloop-compass-orbit span {
+  position: absolute;
+  left: 50%;
+  top: 6%;
+  width: 2px;
+  height: 44%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.62), transparent);
+}
+
+.traveloop-particle-field {
+  position: absolute;
+  inset: 0;
+}
+
+.traveloop-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(209, 250, 229, 0.82);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.45);
+  opacity: 0.34;
+  animation: traveloop-particle-float 18s ease-in-out infinite;
+}
+
+@keyframes traveloop-aurora-flow {
+  from { transform: translate3d(-7%, -8px, 0) rotate(-8deg) scaleX(1); }
+  to { transform: translate3d(8%, 16px, 0) rotate(-4deg) scaleX(1.08); }
+}
+
+@keyframes traveloop-aurora-flow-soft {
+  from { transform: translate3d(5%, 0, 0) rotate(-11deg) scaleX(1.04); }
+  to { transform: translate3d(-8%, -18px, 0) rotate(-6deg) scaleX(1.12); }
+}
+
+@keyframes traveloop-grid-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 76px 76px, 76px 76px; }
+}
+
+@keyframes traveloop-map-pulse {
+  0%, 100% { opacity: 0.18; transform: scale(1); }
+  50% { opacity: 0.30; transform: scale(1.015); }
+}
+
+@keyframes traveloop-route-dash {
+  to { stroke-dashoffset: -220; }
+}
+
+@keyframes traveloop-pin-pulse {
+  0%, 100% { opacity: 0.32; transform: scale(0.85); }
+  48% { opacity: 0.9; transform: scale(1.55); }
+}
+
+@keyframes traveloop-compass-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes traveloop-particle-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(0.75); opacity: 0.18; }
+  45% { transform: translate3d(20px, -34px, 0) scale(1); opacity: 0.52; }
+  70% { transform: translate3d(-10px, -18px, 0) scale(0.86); opacity: 0.32; }
+}
+
+@keyframes traveloop-button-breathe {
+  0%, 100% { box-shadow: var(--action-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.18); }
+  50% { box-shadow: var(--action-shadow-hover), inset 0 1px 0 rgba(255, 255, 255, 0.22); }
+}
+
+@keyframes traveloop-nav-float {
+  0%, 100% { box-shadow: 0 14px 44px rgba(15, 23, 42, 0.10); }
+  50% { box-shadow: 0 18px 54px rgba(15, 23, 42, 0.16), 0 0 28px rgba(37, 99, 235, 0.06); }
+}
+
+@keyframes traveloop-empty-orbit {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes traveloop-empty-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -8px, 0); }
+}
+
+@keyframes traveloop-live-tile-glow {
+  0%, 100% { opacity: 0.18; transform: translateX(-22%); }
+  50% { opacity: 0.48; transform: translateX(22%); }
+}
+
+.traveloop-empty-state {
+  position: relative;
+  overflow: hidden;
+}
+
+.traveloop-empty-state::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(520px, 86vw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px dashed rgba(96, 165, 250, 0.12);
+  opacity: 0.68;
+}
+
+.traveloop-empty-state::after {
+  content: "";
+  position: absolute;
+  inset: auto 18% 18% 18%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.20), transparent);
+}
+
+.traveloop-empty-state > * {
+  position: relative;
+  z-index: 1;
+}
+
+.traveloop-empty-icon {
+  position: relative;
+}
+
+.traveloop-empty-icon::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: 34px;
+  border: 1px solid rgba(96, 165, 250, 0.14);
+  opacity: 0.78;
+}
+
+.traveloop-live-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 0%, rgba(96, 165, 250, 0.11) 45%, transparent 70%);
+  transform: translateX(-38%);
+  opacity: 0.16;
+}
+
+@media (max-width: 767px) {
+  .traveloop-animated-bg::after {
+    background-size: 54px 54px;
+    opacity: 0.34;
+  }
+
+  .traveloop-aurora {
+    height: 34%;
+    filter: blur(38px);
+    opacity: 0.24;
+  }
+
+  .traveloop-route-lines {
+    opacity: 0.20;
+  }
+
+  .traveloop-compass-orbit {
+    opacity: 0.18;
+    right: -24px;
+    top: 84px;
+  }
+
+  .traveloop-particle:nth-child(n+8) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .traveloop-animated-bg::after,
+  .traveloop-aurora,
+  .traveloop-map-grid,
+  .traveloop-route-line,
+  .traveloop-destination-pins circle,
+  .traveloop-compass-orbit,
+  .traveloop-particle,
+  .traveloop-flight-button,
+  .traveloop-glass-nav,
+  .traveloop-empty-state::before,
+  .traveloop-empty-icon,
+  .traveloop-live-tile::after {
+    animation: none !important;
+  }
+}
+
+.traveloop-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-faint);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(12px) saturate(145%);
+  -webkit-backdrop-filter: blur(12px) saturate(145%);
+}
+
+.traveloop-interactive-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 260ms cubic-bezier(0.23, 1, 0.32, 1),
+              box-shadow 260ms cubic-bezier(0.23, 1, 0.32, 1),
+              border-color 260ms cubic-bezier(0.23, 1, 0.32, 1),
+              filter 260ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.traveloop-interactive-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 18% 0%, rgba(96, 165, 250, 0.11), transparent 34%);
+  opacity: 0;
+  transition: opacity 260ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.traveloop-interactive-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border-faint));
+}
+
+.traveloop-interactive-card:hover::before {
+  opacity: 1;
+}
+
+.traveloop-premium-button {
+  background: var(--action-gradient);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: var(--action-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1),
+              box-shadow 220ms cubic-bezier(0.23, 1, 0.32, 1),
+              filter 220ms cubic-bezier(0.23, 1, 0.32, 1),
+              background 220ms cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+
+.traveloop-premium-button:hover {
+  background: var(--action-gradient-hover);
+  box-shadow: var(--action-shadow-hover), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  filter: saturate(1.04) brightness(1.03);
+}
+
+.traveloop-premium-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.18) 45%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 700ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.traveloop-premium-button > * {
+  position: relative;
+  z-index: 1;
+}
+
+.traveloop-premium-button:hover::after { transform: translateX(120%); }
+
+.traveloop-flight-button {
+  animation: none;
+}
+
+.traveloop-flight-button svg {
+  transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.traveloop-flight-button:hover svg {
+  transform: translate3d(3px, -2px, 0) rotate(-8deg);
+}
+
+.traveloop-glass-nav {
+  box-shadow: 0 14px 44px rgba(15, 23, 42, 0.10);
+}
+
+.traveloop-glass-nav::after {
+  content: "";
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.24), rgba(185, 28, 28, 0.14), transparent);
+  opacity: 0.72;
+}
+
+.traveloop-dashboard-hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.traveloop-dashboard-hero::before {
+  content: "";
+  position: absolute;
+  inset: -28px -20px auto -20px;
+  height: 260px;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    linear-gradient(100deg, rgba(37,99,235,0.15), transparent 42%),
+    linear-gradient(260deg, rgba(185,28,28,0.10), transparent 44%);
+  border-radius: 0 0 44px 44px;
+}
+
+.traveloop-auth-panel {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.92), rgba(255,255,255,0.72)),
+    var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.14);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+}
+
+.traveloop-auth-visual {
+  background:
+    linear-gradient(180deg, rgba(5, 12, 24, 0.28), rgba(5, 12, 24, 0.78)),
+    linear-gradient(135deg, #111827 0%, #1d4ed8 58%, #991b1b 130%);
+}
+
+.traveloop-auth-visual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.16) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, transparent, black 18%, black 82%, transparent);
+}
+
+.traveloop-feature-tile {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+  backdrop-filter: blur(18px);
+}
+
+/* ── Marker cluster custom styling ────────────── */
+.marker-cluster-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+.marker-cluster-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #111827;
+  border: 2.5px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), 0 0 0 2px rgba(17, 24, 39, 0.15);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.marker-cluster-custom:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 0 0 0 3px rgba(17, 24, 39, 0.2);
+}
+
+.marker-cluster-custom span {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+/* Hide default markercluster styles we don't need */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background: transparent !important;
+}
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background: transparent !important;
+}
+
+/* ── Leaflet z-index ───────────────────────────── */
+.leaflet-container {
+  z-index: 0;
+}
+.leaflet-pane {
+  z-index: 0 !important;
+}
+.leaflet-top, .leaflet-bottom {
+  z-index: 1 !important;
+}
+
+/* ── iOS-style map tooltip ─────────────────────── */
+.leaflet-tooltip.map-tooltip {
+  background: var(--tooltip-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  padding: 5px 10px;
+  font-family: var(--font-system);
+  font-size: 11px;
+  font-weight: 500;
+  pointer-events: none;
+  color: var(--text-primary);
+}
+.leaflet-tooltip.map-tooltip::before,
+.leaflet-tooltip-left.map-tooltip::before,
+.leaflet-tooltip-top.map-tooltip::before {
+  display: none;
+}
+
+/* Scrollbars — styled on desktop, hidden on mobile */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover);
+}
+
+@media (max-width: 767px) {
+  * { scrollbar-width: none; }
+  ::-webkit-scrollbar { width: 0; height: 0; }
+}
+
+.route-info-pill { background: none !important; border: none !important; box-shadow: none !important; width: auto !important; height: auto !important; margin: 0 !important; }
+.chat-scroll { overflow-y: auto !important; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.chat-scroll::-webkit-scrollbar { width: 0; background: transparent; }
+
+
+/* Einheitliche Formular-Inputs */
+.form-input {
+  width: 100%;
+  border: 1px solid var(--border-primary);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  transition: border-color 0.15s;
+}
+.form-input:focus {
+  border-color: var(--text-faint);
+}
+.form-input::placeholder {
+  color: var(--text-faint);
+}
+
+/* Brand images: no save/copy/drag */
+img[alt="TRAVELOOP"] {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+/* Weiche Übergänge */
+.transition-smooth {
+  transition: all 0.2s ease;
+}
+
+
+
+/* Tagesliste */
+.day-list-item {
+  transition: background-color 0.15s ease;
+}
+
+.day-list-item:hover {
+  background-color: var(--bg-secondary);
+}
+
+.day-list-item.active {
+  background-color: #4f46e5;
+  color: white;
+}
+
+.scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* ── Dark-Mode: Tailwind-Klassen ─────────────── */
+.dark .bg-slate-50 { background-color: #131316 !important; }
+.dark .bg-slate-100 { background-color: #1c1c21 !important; }
+.dark .bg-white { background-color: #09090b !important; }
+.dark .bg-gray-50 { background-color: #131316 !important; }
+.dark .bg-gray-100 { background-color: #1c1c21 !important; }
+.dark .text-slate-900, .dark .text-gray-900, .dark .text-slate-800 { color: #f4f4f5 !important; }
+.dark .text-slate-700, .dark .text-gray-700 { color: #d4d4d8 !important; }
+.dark .text-slate-600, .dark .text-gray-600 { color: #a1a1aa !important; }
+.dark .text-slate-500, .dark .text-gray-500 { color: #a1a1aa !important; }
+.dark .text-slate-400, .dark .text-gray-400 { color: #71717a !important; }
+.dark .border-slate-200, .dark .border-gray-200, .dark .border-slate-300 { border-color: #27272a !important; }
+.dark .border-gray-100, .dark .border-slate-100 { border-color: #1c1c21 !important; }
+.dark .hover\:bg-slate-50:hover, .dark .hover\:bg-gray-50:hover { background-color: #1c1c21 !important; }
+.dark .bg-slate-50\/60 { background-color: transparent !important; }
+.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]) { border-color: #27272a !important; }
+.dark .bg-slate-100 { background-color: #27272a !important; }
+.dark .bg-slate-900 { background-color: #e4e4e7 !important; color: #09090b !important; }
+.dark .hover\:bg-slate-700:hover { background-color: #d4d4d8 !important; color: #09090b !important; }
+.dark input, .dark textarea, .dark select {
+  background-color: #1c1c21;
+  color: #f4f4f5;
+  border-color: #27272a;
+}
+.dark input::placeholder, .dark textarea::placeholder { color: #71717a; }
+.dark .bg-emerald-50 { background-color: rgba(37,99,235,0.12) !important; }
+.dark .bg-red-50 { background-color: rgba(239,68,68,0.15) !important; }
+
+/* Ladebildschirm */
+.dark .min-h-screen { background-color: var(--bg-primary) !important; }
+
+/* Modal-Hintergrund */
+.dark .modal-backdrop { background: rgba(0,0,0,0.6); }
+
+/* ── Dark: Fallback für Komponenten die noch nicht auf CSS-Variablen umgestellt sind ── */
+.dark {
+  color-scheme: dark;
+}
+
+
+/* Toast-Animationen */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-out-right {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+.toast-enter {
+  animation: slide-in-right 0.3s ease-out forwards;
+}
+
+.toast-exit {
+  animation: slide-out-right 0.3s ease-in forwards;
+}
+
+/* Modal-Hintergrund */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+}
+
+/* Fortschrittsbalken */
+@keyframes progress-fill {
+  from { width: 0; }
+  to { width: var(--progress); }
+}
+
+/* Anmeldeseiten-Gradient */
+.auth-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Bildanzeige-Overlay */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Markdown in Collab Notes */
+.collab-note-md strong, .collab-note-md-full strong { font-weight: 700 !important; }
+.collab-note-md em, .collab-note-md-full em { font-style: italic !important; }
+.collab-note-md h1, .collab-note-md h2, .collab-note-md h3 { font-weight: 700 !important; margin: 0; }
+.collab-note-md-full h1 { font-size: 1.3em !important; font-weight: 700 !important; margin: 0.8em 0 0.3em; }
+.collab-note-md-full h2 { font-size: 1.15em !important; font-weight: 700 !important; margin: 0.8em 0 0.3em; }
+.collab-note-md-full h3 { font-size: 1em !important; font-weight: 700 !important; margin: 0.8em 0 0.3em; }
+.collab-note-md p, .collab-note-md-full p { margin: 0 0 0.3em; }
+.collab-note-md ul, .collab-note-md-full ul { list-style-type: disc !important; padding-left: 1.4em !important; margin: 0.2em 0; }
+.collab-note-md ol, .collab-note-md-full ol { list-style-type: decimal !important; padding-left: 1.4em !important; margin: 0.2em 0; }
+.collab-note-md li, .collab-note-md-full li { display: list-item !important; margin: 0.1em 0; }
+.collab-note-md code, .collab-note-md-full code { font-size: 0.9em; padding: 1px 5px; border-radius: 4px; background: var(--bg-secondary); }
+.collab-note-md-full pre { padding: 10px 12px; border-radius: 8px; background: var(--bg-secondary); overflow-x: auto; margin: 0.5em 0; }
+.collab-note-md-full pre code { padding: 0; background: none; }
+.collab-note-md a, .collab-note-md-full a { color: #3b82f6; text-decoration: underline; word-break: break-all; }
+.collab-note-md blockquote, .collab-note-md-full blockquote { border-left: 3px solid var(--border-primary); padding-left: 12px; margin: 0.5em 0; color: var(--text-muted); }
+.collab-note-md-full table { border-collapse: collapse; width: 100%; margin: 0.5em 0; }
+.collab-note-md-full th, .collab-note-md-full td { border: 1px solid var(--border-primary); padding: 4px 8px; font-size: 0.9em; }
+.collab-note-md-full hr { border: none; border-top: 1px solid var(--border-primary); margin: 0.8em 0; }

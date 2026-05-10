@@ -1,0 +1,1 @@
+[AGPL-3.0 License](https://github.com/mauriceboe/TRAVELOOP/blob/main/LICENSE) · [GitHub](https://github.com/mauriceboe/TRAVELOOP) · [Discord](https://discord.gg/NhZBDSd4qW) · [Security Hardening](Security-Hardening)
